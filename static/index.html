@@ -95,17 +95,30 @@
 <script>
     const JoinChat = {
         ui: {
-            usernameInput: document.getElementById('usernameInput'),
-            joinBtn: document.getElementById('joinBtn')
+            usernameInput: null, // Will be populated later
+            joinBtn: null      // Will be populated later
         },
 
         init() {
+            // This part needs the DOM, so it runs after DOMContentLoaded.
+            this.ui.usernameInput = document.getElementById('usernameInput');
+            this.ui.joinBtn = document.getElementById('joinBtn');
+
             this.ui.joinBtn.addEventListener('click', () => this.join());
             this.ui.usernameInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     this.join();
                 }
             });
+        },
+
+        checkSession() {
+            // This check runs immediately, before the DOM is fully loaded.
+            const existingUsername = localStorage.getItem('chatUsername');
+            if (existingUsername) {
+                console.log(`Found existing user: ${existingUsername}. Redirecting to chat.`);
+                window.location.href = 'chat.html';
+            }
         },
 
         join() {
@@ -121,6 +134,10 @@
         }
     };
 
+    // Run the session check immediately.
+    JoinChat.checkSession();
+
+    // Initialize the rest of the UI logic after the DOM has loaded.
     document.addEventListener('DOMContentLoaded', () => JoinChat.init());
 </script>
 </body>
